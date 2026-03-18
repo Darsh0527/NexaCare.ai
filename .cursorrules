@@ -1,0 +1,6 @@
+# NexaCare.ai Customization Rules
+
+1. Always use semantic HTML5 elements (e.g., `<article>`, `<section>`, `<nav>`, `<aside>`, `<header>`, `<footer>`, `<main>`) for better accessibility and SEO.
+2. Maintain consistent spacing using an 8px grid system throughout the design (e.g., margins and paddings should be multiples of 8: 8px, 16px, 24px, 32px, etc.).
+3. All animations must respect `prefers-reduced-motion` for accessibility (e.g., `media (prefers-reduced-motion: reduce)`).
+4. Use CSS variables (e.g., `var(--primary-color)`) for all colors to enable easy theme switching. Do not hardcode colors in components.

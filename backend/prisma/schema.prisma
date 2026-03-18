@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  role          String
+  email         String   @unique
+  password_hash String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Patient {
+  id           String   @id @default(uuid())
+  name         String
+  age          Int
+  diagnosis    String
+  vitals       Json     // e.g., { heartRate: 80, spO2: 95, temperature: 98.6 }
+  risk_score   Float    @default(0.0)
+  alerts       Alert[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Alert {
+  id          String   @id @default(uuid())
+  patient_id  String
+  patient     Patient  @relation(fields: [patient_id], references: [id])
+  type        String
+  severity    String   // "CRITICAL", "HIGH", "MEDIUM", "LOW"
+  reason      String
+  timestamp   DateTime @default(now())
+}
+
+model Forecast {
+  id              String   @id @default(uuid())
+  date            DateTime @unique
+  beds_needed     Int
+  staff_needed    Int
+  icu_probability Float
+  createdAt       DateTime @default(now())
+}
