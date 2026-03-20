@@ -1,11 +1,7 @@
-"use client";
-
-import React from "react";
-import DoctorDashboard from "@/app/doctor/page";
+import { redirect } from "next/navigation";
 
 export default function DashboardPage() {
-  // For MVP we reuse the existing clinician dashboard UI.
-  // Admin-specific UI will be wired in a later task.
-  return <DoctorDashboard />;
+  // Task 2 MVP navigation: landing on /dashboard should show patient list.
+  redirect("/dashboard/patients");
 }
 
