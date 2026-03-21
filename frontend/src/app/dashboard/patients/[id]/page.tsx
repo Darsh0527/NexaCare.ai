@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import api from "@/lib/api";
+import axios from "axios";
 import { ArrowLeft, Activity, Heart, Thermometer, Wind, AlertTriangle, Calculator, X } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -145,14 +146,26 @@ export default function PatientDetailPage() {
     scales: { x: { max: 100 } }
   };
 
-  const handleCalculate = (e: React.FormEvent) => {
+  const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCalcResult({
-      risk_score: 85,
-      risk_level: "CRITICAL",
-      reasons: ["Simulated ML Reason 1", "Simulated ML Reason 2", "Simulated ML Reason 3"],
-      confidence: 96
-    });
+    try {
+      const mlUrl = process.env.NEXT_PUBLIC_ML_URL || 'http://localhost:8000';
+      const res = await axios.post(`${mlUrl}/predict`, {
+        age: calcVitals.age,
+        heart_rate: calcVitals.heartRate,
+        systolic_bp: calcVitals.systolicBp,
+        temperature: calcVitals.temperature,
+        oxygen_level: calcVitals.oxygenLevel
+      });
+      setCalcResult(res.data);
+    } catch (err: any) {
+      setCalcResult({
+        risk_score: 0,
+        risk_level: "ERROR",
+        reasons: ["Failed to connect to ML service"],
+        confidence: 0
+      });
+    }
   };
 
   return (
