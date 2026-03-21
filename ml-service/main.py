@@ -1,65 +1,97 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
-import numpy as np
-import random
-import datetime
+from typing import List
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="NexaCare AI Engine")
+app = FastAPI(title="NexaCare ML Service")
 
-class HealthData(BaseModel):
-    heartRate: float
-    bloodPressureSys: float
-    bloodPressureDia: float
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class PatientData(BaseModel):
+    age: float
+    heart_rate: float
+    systolic_bp: float
     temperature: float
-    spo2: float
-    age: int
+    oxygen_level: float
 
-@app.get("/")
-def read_root():
-    return {"message": "NexaCare ML Service is running"}
+class PredictionResponse(BaseModel):
+    risk_score: int
+    risk_level: str
+    reasons: List[str]
+    confidence: float
 
-@app.post("/predict_risk")
-def predict_risk(data: HealthData):
-    # Mocking a predictive model (e.g., Random Forest / XGBoost)
-    # Give higher risk for abnormal vitals
-    risk_score = 10.0
-    
-    # Simple mock heuristics to influence score
-    if data.heartRate > 100 or data.heartRate < 50:
-        risk_score += 20
-    if data.spo2 < 92:
-        risk_score += 30
-    if data.bloodPressureSys > 160 or data.bloodPressureSys < 90:
-        risk_score += 20
-    
-    # Add some randomness for the mock
-    risk_score += random.uniform(-5, 5)
-    risk_score = min(max(risk_score, 0), 100) # Clamp 0-100
-    
-    # Mock SHAP (Explainable AI) values
-    shap_values = [
-        {"feature": "Heart Rate", "impactValue": round(random.uniform(5, 15), 1), "description": "Elevated heart rate contributes to risk."},
-        {"feature": "SpO2", "impactValue": round(random.uniform(-10, -2), 1), "description": "Lower oxygen levels increase risk."},
-        {"feature": "Age factor", "impactValue": round(random.uniform(1, 5), 1), "description": "Baseline age risk."}
-    ]
-    
-    # Determine clinical alert
-    alert = "NORMAL"
-    recommendation = "Maintain current monitoring."
-    if risk_score > 75:
-        alert = "CRITICAL"
-        recommendation = "Immediate ICU consult and continuous SpO2 monitoring required."
-    elif risk_score > 50:
-        alert = "HIGH"
-        recommendation = "Order ABG and increase monitoring frequency to Q1H."
-    elif risk_score > 30:
-        alert = "MODERATE"
-        recommendation = "Review vitals next shift."
+@app.get("/health")
+def health():
+    return {"status": "ok", "model": "rule-based-v1"}
+
+@app.post("/predict", response_model=PredictionResponse)
+def predict(data: PatientData):
+    score = 0
+    reasons = []
+
+    if data.oxygen_level < 92:
+        score += 35
+        reasons.append("Oxygen saturation critically low (<92%)")
+    elif data.oxygen_level < 95:
+        score += 15
+        reasons.append("Oxygen saturation borderline low (<95%)")
+
+    if data.heart_rate > 110:
+        score += 25
+        reasons.append("Heart rate severely elevated (>110 bpm)")
+    elif data.heart_rate > 100:
+        score += 15
+        reasons.append("Heart rate elevated (>100 bpm)")
+
+    if data.systolic_bp > 160:
+        score += 20
+        reasons.append("Blood pressure critically high (>160 mmHg)")
+    elif data.systolic_bp > 140:
+        score += 10
+        reasons.append("Blood pressure elevated (>140 mmHg)")
+
+    if data.temperature > 39.0:
+        score += 20
+        reasons.append("High temperature indicating infection (>39.0 °C)")
+    elif data.temperature > 38.0:
+        score += 10
+        reasons.append("Elevated temperature (>38.0 °C)")
+
+    if data.age > 70:
+        score += 15
+        reasons.append("Age related high risk factor (>70 years)")
+    elif data.age > 60:
+        score += 8
+        reasons.append("Age related vulnerability (>60 years)")
+
+    if score > 100:
+        score = 100
+
+    if score < 40:
+        risk_level = "LOW"
+    elif score < 60:
+        risk_level = "MEDIUM"
+    elif score < 80:
+        risk_level = "HIGH"
+    else:
+        risk_level = "CRITICAL"
         
-    return {
-        "riskScore": round(risk_score, 1),
-        "clinicalAlert": alert,
-        "recommendation": recommendation,
-        "shapValues": shap_values,
-        "timestamp": datetime.datetime.now().isoformat()
-    }
+    if not reasons:
+        reasons.append("Vitals are stable and within normal ranges")
+
+    return PredictionResponse(
+        risk_score=int(score),
+        risk_level=risk_level,
+        reasons=reasons,
+        confidence=round(min(85.0 + (score / 10), 99.9), 1)
+    )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
