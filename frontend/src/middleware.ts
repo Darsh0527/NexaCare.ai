@@ -1,35 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-const AUTH_COOKIE = "nexacare_auth";
-const ROLE_COOKIE = "nexacare_role";
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('nexacare_token')?.value;
+  const role = request.cookies.get('nexacare_role')?.value;
+  const { pathname } = request.nextUrl;
 
-function isProtectedPath(pathname: string) {
-  return pathname.startsWith("/dashboard") || pathname === "/doctor";
-}
-
-export function middleware(req: NextRequest) {
-  if (!isProtectedPath(req.nextUrl.pathname)) return NextResponse.next();
-
-  const auth = req.cookies.get(AUTH_COOKIE)?.value;
-  if (auth !== "1") {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/login";
-    loginUrl.searchParams.set("from", req.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+  // Protect /dashboard and all sub-routes
+  if (pathname.startsWith('/dashboard')) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    
+    // Role based access:
+    // /dashboard/forecast -> admin only
+    if (pathname.startsWith('/dashboard/forecast') && role !== 'admin') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
-  const role = req.cookies.get(ROLE_COOKIE)?.value;
-  if (!role) {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/login";
-    loginUrl.searchParams.set("from", req.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+  // If visiting /login with token -> redirect to /dashboard
+  if (pathname.startsWith('/login')) {
+    if (token) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/doctor"],
+  matcher: ['/dashboard/:path*', '/login'],
 };
-

@@ -31,6 +31,8 @@ export default function Login() {
     };
     
     localStorage.setItem("nexacare_auth", JSON.stringify(authData));
+    document.cookie = `nexacare_token=${authData.token}; path=/; max-age=86400;`;
+    document.cookie = `nexacare_role=${authData.role}; path=/; max-age=86400;`;
     router.push("/dashboard");
   };
 
