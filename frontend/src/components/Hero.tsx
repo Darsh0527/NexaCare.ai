@@ -1,6 +1,7 @@
 import { Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
 import { GooeyTextDemo } from "@/components/GooeyTextDemo";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -15,8 +16,8 @@ export function Hero() {
           
           <GooeyTextDemo />
           <h1 className="font-display text-[64px] lg:text-[72px] font-[800] text-[#1A1A1A] leading-[1.0] mb-8">
-            Patient Care <br />
-            With <span className="text-[#C8A96E] italic">NexaCare</span>
+            Predict Patient Risk <br />
+            <span className="text-[#C8A96E] italic">Before It's Too Late</span>
           </h1>
           
           <p className="text-[15px] font-sans text-[#6B6B6B] leading-[1.7] max-w-lg mb-10">
@@ -25,29 +26,33 @@ export function Hero() {
           
           {/* CTA Row */}
           <div className="flex flex-wrap items-center gap-6 mb-16">
-            <button className="bg-[#1A1A1A] text-white px-7 py-3 rounded-[6px] text-[14px] font-medium hover:bg-[#333333] transition-colors">
-              Get Started
-            </button>
-            <div className="flex items-center gap-4">
-              <span className="text-[#1A1A1A] font-medium text-[14px]">Join Our Network</span>
-              <a href="#" className="text-[#1A1A1A] hover:text-[#C8A96E] transition-colors"><Linkedin size={20} /></a>
-              <a href="#" className="text-[#1A1A1A] hover:text-[#C8A96E] transition-colors"><Twitter size={20} /></a>
-            </div>
+            <Link
+              href="/login?role=clinician"
+              className="bg-[#1A1A1A] text-white px-7 py-3 rounded-[6px] text-[14px] font-medium hover:bg-[#333333] transition-colors"
+            >
+              Login as Clinician
+            </Link>
+            <Link
+              href="/login?role=admin"
+              className="bg-transparent border border-[#1A1A1A] text-[#1A1A1A] px-7 py-3 rounded-[6px] text-[14px] font-medium hover:bg-[#1A1A1A] hover:text-white transition-colors"
+            >
+              Login as Admin
+            </Link>
           </div>
           
           {/* Stats Below */}
           <div className="flex flex-wrap gap-10 border-t border-[#E0DDD7] pt-8">
             <div>
+              <div className="font-display text-4xl font-[800] text-[#1A1A1A]">6-48 hrs</div>
+              <div className="text-[13px] text-[#6B6B6B] mt-1">early warning window</div>
+            </div>
+            <div>
               <div className="font-display text-4xl font-[800] text-[#1A1A1A]">30%</div>
               <div className="text-[13px] text-[#6B6B6B] mt-1">fewer ICU escalations</div>
             </div>
             <div>
-              <div className="font-display text-4xl font-[800] text-[#1A1A1A]">6–48 hrs</div>
-              <div className="text-[13px] text-[#6B6B6B] mt-1">earlier warning window</div>
-            </div>
-            <div>
-              <div className="font-display text-4xl font-[800] text-[#1A1A1A]">₹80K</div>
-              <div className="text-[13px] text-[#6B6B6B] mt-1">saved per readmission</div>
+              <div className="font-display text-4xl font-[800] text-[#1A1A1A]">95%</div>
+              <div className="text-[13px] text-[#6B6B6B] mt-1">prediction accuracy</div>
             </div>
           </div>
         </div>
