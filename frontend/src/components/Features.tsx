@@ -15,7 +15,7 @@ export function Features() {
             <p className="text-[15px] font-sans text-[#6B6B6B] leading-[1.7] mb-8">
               By analyzing thousands of data points backwards in time, our predictive models highlight patients who are most vulnerable so you can prevent adverse events before they happen.
             </p>
-            <Link href="/doctor" className="inline-flex items-center text-[#C8A96E] italic font-semibold hover:underline">
+            <Link href="/login" className="inline-flex items-center text-[#C8A96E] italic font-semibold hover:underline">
               Get Started <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
@@ -75,7 +75,7 @@ export function Features() {
                    <div className="text-[12px] font-semibold text-[#9B9B9B] tracking-[0.12em] uppercase mb-2">{card.tag}</div>
                    <h3 className="font-display text-[20px] font-bold text-[#1A1A1A]">{card.title}</h3>
                  </div>
-                <Link href="/doctor" className="self-start mt-4" aria-label={`${card.title} - navigate to doctor dashboard`}>
+                <Link href="/login" className="self-start mt-4" aria-label={`${card.title} - navigate to doctor dashboard`}>
                   <ArrowRight className="w-5 h-5 text-[#1A1A1A]" />
                 </Link>
                </div>

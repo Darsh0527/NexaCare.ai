@@ -32,7 +32,7 @@ export function Navbar() {
           activeColor="text-[#C8A96E]" 
           onChange={(index) => {
             // MVP: route users to the working doctor dashboard when selecting any tab.
-            if (index !== null) router.push("/doctor");
+            if (index !== null) router.push("/login");
           }}
         />
       </div>
@@ -41,7 +41,7 @@ export function Navbar() {
       <div className="flex items-center gap-4">
         <DefaultToggle />
         <Link
-          href="/doctor"
+          href="/login"
           className="flex items-center gap-2 bg-transparent border-[1.5px] border-[#1A1A1A] text-[#1A1A1A] px-5 py-2.5 rounded-[6px] text-sm font-medium hover:bg-[#1A1A1A] hover:text-white transition-all"
         >
           <MapPin size={16} />

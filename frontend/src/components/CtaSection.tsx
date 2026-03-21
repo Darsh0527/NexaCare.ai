@@ -6,7 +6,7 @@ export function CtaSection() {
           Ready to catch risk before it becomes a crisis?
         </h2>
         <a
-          href="/doctor"
+          href="/login"
           className="bg-white text-[#1A1A1A] px-8 py-4 rounded-[6px] text-[15px] font-medium hover:bg-[#F2F0EB] transition-colors inline-block"
         >
           Book a Demo

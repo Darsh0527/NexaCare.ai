@@ -33,7 +33,7 @@ export function Pricing() {
               </div>
               <div>
                 <a
-                  href="/doctor"
+                  href="/login"
                   className="bg-transparent border-[1.5px] border-[#1A1A1A] text-[#1A1A1A] px-6 py-2.5 rounded-[6px] text-[14px] font-medium group-hover:bg-[#1A1A1A] group-hover:text-white transition-all whitespace-nowrap inline-block"
                 >
                   {plan.btn}
