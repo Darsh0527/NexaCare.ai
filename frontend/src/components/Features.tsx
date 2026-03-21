@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function Features() {
   return (
@@ -14,9 +15,9 @@ export function Features() {
             <p className="text-[15px] font-sans text-[#6B6B6B] leading-[1.7] mb-8">
               By analyzing thousands of data points backwards in time, our predictive models highlight patients who are most vulnerable so you can prevent adverse events before they happen.
             </p>
-            <a href="#" className="inline-flex items-center text-[#C8A96E] italic font-semibold hover:underline">
+            <Link href="/doctor" className="inline-flex items-center text-[#C8A96E] italic font-semibold hover:underline">
               Get Started <ArrowRight className="w-4 h-4 ml-1" />
-            </a>
+            </Link>
           </div>
           <div className="bg-white rounded-[20px] border border-[#E0DDD7] p-8 shadow-sm h-[400px] flex items-center justify-center relative overflow-hidden group">
              <img src="/images/features/dashboard.jpg" className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Medical dashboard" />
@@ -74,7 +75,9 @@ export function Features() {
                    <div className="text-[12px] font-semibold text-[#9B9B9B] tracking-[0.12em] uppercase mb-2">{card.tag}</div>
                    <h3 className="font-display text-[20px] font-bold text-[#1A1A1A]">{card.title}</h3>
                  </div>
-                 <a href="#" className="self-start mt-4"><ArrowRight className="w-5 h-5 text-[#1A1A1A]" /></a>
+                <Link href="/doctor" className="self-start mt-4" aria-label={`${card.title} - navigate to doctor dashboard`}>
+                  <ArrowRight className="w-5 h-5 text-[#1A1A1A]" />
+                </Link>
                </div>
             </div>
           ))}

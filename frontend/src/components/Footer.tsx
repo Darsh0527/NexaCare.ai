@@ -21,30 +21,30 @@ export function Footer() {
           <div>
              <h4 className="font-bold text-[#1A1A1A] mb-4">Product</h4>
              <ul className="space-y-2 text-[#6B6B6B] text-[14px]">
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">Risk Scoring</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">SHAP Explainability</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">Clinician Hub</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">Pricing</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">Risk Scoring</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">SHAP Explainability</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">Clinician Hub</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">Pricing</a></li>
              </ul>
           </div>
           
           <div>
              <h4 className="font-bold text-[#1A1A1A] mb-4">Company</h4>
              <ul className="space-y-2 text-[#6B6B6B] text-[14px]">
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">About Us</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">Careers</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">Events</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">Contact</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">About Us</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">Careers</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">Events</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">Contact</a></li>
              </ul>
           </div>
           
           <div>
              <h4 className="font-bold text-[#1A1A1A] mb-4">Support</h4>
              <ul className="space-y-2 text-[#6B6B6B] text-[14px]">
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">Help Center</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">API Documentation</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">HIPAA Compliance</a></li>
-               <li><a href="#" className="hover:text-[#C8A96E] transition-colors">System Status</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">Help Center</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">API Documentation</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">HIPAA Compliance</a></li>
+              <li><a href="/doctor" className="hover:text-[#C8A96E] transition-colors">System Status</a></li>
              </ul>
           </div>
         </div>
@@ -52,8 +52,8 @@ export function Footer() {
         <div className="border-t border-[#E0DDD7] pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-[#9B9B9B]">
            <div>&copy; 2026 NexaCare.ai. All rights reserved.</div>
            <div className="flex gap-6">
-             <a href="#" className="hover:text-[#1A1A1A] transition-colors">Privacy Policy</a>
-             <a href="#" className="hover:text-[#1A1A1A] transition-colors">Terms of Service</a>
+            <a href="/doctor" className="hover:text-[#1A1A1A] transition-colors">Privacy Policy</a>
+            <a href="/doctor" className="hover:text-[#1A1A1A] transition-colors">Terms of Service</a>
            </div>
         </div>
       </div>

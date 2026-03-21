@@ -1,19 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { alerts as mockAlerts } from "@/data/mockData";
+import api from "@/lib/api";
 import { CheckCircle, AlertTriangle, ArrowRight } from "lucide-react";
 
 export default function AlertsPage() {
   const [filter, setFilter] = useState("ALL");
-  const [alerts, setAlerts] = useState(mockAlerts);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const res = await api.get('/alerts');
+        setAlerts(res.data);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch alerts');
+        setLoading(false);
+      }
+    };
+    fetchAlerts();
+  }, []);
 
   const filteredAlerts = alerts.filter(a => filter === "ALL" || a.severity === filter);
 
   const resolveAlert = (id: number) => {
     setAlerts(alerts.filter(a => a.id !== id));
   };
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-full min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A1A1A]"></div>
+    </div>
+  );
+  if (error) return <div className="p-8 text-red-500 font-medium">Error: {error}</div>;
 
   return (
     <div className="space-y-6">

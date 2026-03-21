@@ -5,9 +5,12 @@ export function CtaSection() {
         <h2 className="font-display text-[44px] md:text-[56px] font-[700] text-white leading-[1.1] mb-10">
           Ready to catch risk before it becomes a crisis?
         </h2>
-        <button className="bg-white text-[#1A1A1A] px-8 py-4 rounded-[6px] text-[15px] font-medium hover:bg-[#F2F0EB] transition-colors">
+        <a
+          href="/doctor"
+          className="bg-white text-[#1A1A1A] px-8 py-4 rounded-[6px] text-[15px] font-medium hover:bg-[#F2F0EB] transition-colors inline-block"
+        >
           Book a Demo
-        </button>
+        </a>
       </div>
     </section>
   );

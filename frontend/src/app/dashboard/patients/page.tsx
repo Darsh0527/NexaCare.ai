@@ -1,13 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { patients } from "@/data/mockData";
+import api from "@/lib/api";
 import { Search, ArrowRight } from "lucide-react";
 
 export default function PatientsListPage() {
+  const [patients, setPatients] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("Risk Score");
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const res = await api.get('/patients');
+        setPatients(res.data);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch patients');
+        setLoading(false);
+      }
+    };
+    fetchPatients();
+  }, []);
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-full min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A1A1A]"></div>
+    </div>
+  );
+  if (error) return <div className="p-8 text-red-500 font-medium">Error: {error}</div>;
 
   const filteredPatients = patients.filter(p => 
     p.name.toLowerCase().includes(search.toLowerCase()) || 

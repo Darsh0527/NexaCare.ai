@@ -1,34 +1,22 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+import axios from 'axios';
 
-export const fetchWithAuth = async (endpoint: string, options: RequestInit = {}) => {
-  const token = localStorage.getItem("token");
-  const headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+});
 
-  if (token) {
-    (headers as any)["Authorization"] = `Bearer ${token}`;
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const authData = localStorage.getItem('nexacare_auth');
+    if (authData) {
+      try {
+        const { token } = JSON.parse(authData);
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } catch (e) {}
+    }
   }
+  return config;
+});
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  if (!response.ok) {
-    throw new Error(`API call failed: ${response.statusText}`);
-  }
-
-  return response.json();
-};
-
-export const doctorApi = {
-  getPatients: () => fetchWithAuth("/patients"),
-  getPatientDetails: (id: string) => fetchWithAuth(`/patients/${id}`),
-};
-
-export const authApi = {
-  login: (data: any) => fetchWithAuth("/auth/login", { method: "POST", body: JSON.stringify(data) }),
-  register: (data: any) => fetchWithAuth("/auth/register", { method: "POST", body: JSON.stringify(data) }),
-};
+export default api;

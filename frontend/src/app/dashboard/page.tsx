@@ -1,14 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { patients, alerts, forecastData } from "@/data/mockData";
+import api from "@/lib/api";
 import { Users, AlertTriangle, Activity, Bed, ArrowRight, Calculator } from "lucide-react";
 
 export default function DashboardOverview() {
+  const [patients, setPatients] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [forecastData, setForecastData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [pRes, aRes, fRes] = await Promise.all([
+          api.get('/patients'),
+          api.get('/alerts'),
+          api.get('/forecast')
+        ]);
+        setPatients(pRes.data);
+        setAlerts(aRes.data);
+        setForecastData(fRes.data);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch dashboard data");
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-full min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A1A1A]"></div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+      <strong className="font-bold">Error: </strong>
+      <span className="block sm:inline">{error}</span>
+    </div>
+  );
+
   const totalPatients = patients.length;
   const criticalAlerts = alerts.filter(a => a.severity === "CRITICAL" || a.severity === "HIGH").length;
-  const avgRiskScore = Math.round(patients.reduce((acc, p) => acc + p.riskScore, 0) / patients.length);
+  const avgRiskScore = patients.length > 0 ? Math.round(patients.reduce((acc, p) => acc + p.riskScore, 0) / patients.length) : 0;
   const bedsNeededToday = forecastData[0]?.beds_needed || 0;
 
   const topPatients = [...patients].sort((a, b) => b.riskScore - a.riskScore).slice(0, 5);

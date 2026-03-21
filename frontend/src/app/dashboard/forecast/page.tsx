@@ -1,6 +1,7 @@
 "use client";
 
-import { forecastData } from "@/data/mockData";
+import { useState, useEffect } from "react";
+import api from "@/lib/api";
 import { AlertCircle, TrendingUp, Users, Bed } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -21,6 +22,32 @@ ChartJS.register(
 );
 
 export default function ForecastPage() {
+  const [forecastData, setForecastData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchForecast = async () => {
+      try {
+        const res = await api.get('/forecast');
+        setForecastData(res.data);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch forecast data');
+        setLoading(false);
+      }
+    };
+    fetchForecast();
+  }, []);
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-full min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A1A1A]"></div>
+    </div>
+  );
+  if (error) return <div className="p-8 text-red-500 font-medium">Error: {error}</div>;
+  if (!forecastData.length) return <div className="p-8 text-[#6B6B6B]">No forecast data available.</div>;
+
   const labels = forecastData.map(d => `Day ${d.day}`);
   
   const bedData = {

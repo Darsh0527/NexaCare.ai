@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { patients, alerts as allAlerts } from "@/data/mockData";
+import api from "@/lib/api";
 import { ArrowLeft, Activity, Heart, Thermometer, Wind, AlertTriangle, Calculator, X } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -25,23 +25,57 @@ ChartJS.register(
 
 export default function PatientDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const id = Number(params.id);
-  const patient = patients.find(p => p.id === id);
   
+  const [patient, setPatient] = useState<any>(null);
+  const [patientAlerts, setPatientAlerts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [calcVitals, setCalcVitals] = useState({
-    age: patient?.age || 0,
-    heartRate: patient?.vitals.heartRate || 0,
-    systolicBp: parseInt(patient?.vitals.bloodPressure.split('/')[0] || '120'),
-    temperature: patient?.vitals.temperature || 37.0,
-    oxygenLevel: patient?.vitals.oxygenLevel || 98
+    age: 0,
+    heartRate: 0,
+    systolicBp: 120,
+    temperature: 37.0,
+    oxygenLevel: 98
   });
   const [calcResult, setCalcResult] = useState<any>(null);
 
-  if (!patient) return <div className="p-8">Patient not found</div>;
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const [pRes, aRes] = await Promise.all([
+          api.get(`/patients/${id}`),
+          api.get('/alerts')
+        ]);
+        setPatient(pRes.data);
+        setPatientAlerts(aRes.data.filter((a: any) => a.patientId === id));
+        
+        setCalcVitals({
+          age: pRes.data.age || 0,
+          heartRate: pRes.data.vitals.heartRate || 0,
+          systolicBp: parseInt(pRes.data.vitals.bloodPressure.split('/')[0] || '120'),
+          temperature: pRes.data.vitals.temperature || 37.0,
+          oxygenLevel: pRes.data.vitals.oxygenLevel || 98
+        });
 
-  const patientAlerts = allAlerts.filter(a => a.patientId === patient.id);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch patient details");
+        setLoading(false);
+      }
+    };
+    if (id) fetchPatientData();
+  }, [id]);
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-full min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1A1A1A]"></div>
+    </div>
+  );
+  if (error) return <div className="p-8 text-red-500 font-medium">Error: {error}</div>;
+  if (!patient) return <div className="p-8 text-[#6B6B6B]">Patient not found</div>;
 
   let badgeColor = "text-green-600 border-green-600";
   let bgCircle = "bg-green-50";
@@ -56,14 +90,13 @@ export default function PatientDetailPage() {
     bgCircle = "bg-yellow-50";
   }
 
-  const suggestions = {
+  const suggestions: Record<string, string> = {
     CRITICAL: "Immediate physician review required",
     HIGH: "Schedule urgent assessment within 2 hours",
     MEDIUM: "Monitor closely, review in 4 hours",
     LOW: "Routine monitoring, no immediate action"
   };
 
-  // Mock data for Risk History Line Chart
   const historyData = {
     labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
     datasets: [
@@ -89,15 +122,10 @@ export default function PatientDetailPage() {
   const lineOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      y: { min: 0, max: 100 }
-    }
+    plugins: { legend: { display: false } },
+    scales: { y: { min: 0, max: 100 } }
   };
 
-  // Mock data for SHAP Horizontal Bar Chart
   const shapData = {
     labels: patient.riskReasons.slice(0, 3) || ['Age', 'Vitals', 'History'],
     datasets: [
@@ -113,17 +141,12 @@ export default function PatientDetailPage() {
     indexAxis: 'y' as const,
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      x: { max: 100 }
-    }
+    plugins: { legend: { display: false } },
+    scales: { x: { max: 100 } }
   };
 
   const handleCalculate = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate ML result for now
     setCalcResult({
       risk_score: 85,
       risk_level: "CRITICAL",
@@ -240,7 +263,6 @@ export default function PatientDetailPage() {
         </div>
       </div>
 
-      {/* Risk Calculator Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto shadow-2xl relative">

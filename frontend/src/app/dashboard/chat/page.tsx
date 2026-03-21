@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import api from "@/lib/api";
 import { Send, Bot, User, Sparkles } from "lucide-react";
-import { chatResponses } from "@/data/mockData";
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<{role: 'user' | 'ai', content: string}[]>([
@@ -28,7 +28,7 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSend = (text: string) => {
+  const handleSend = async (text: string) => {
     if (!text.trim()) return;
     
     // Add user message
@@ -36,15 +36,14 @@ export default function ChatPage() {
     setInput("");
     setIsTyping(true);
 
-    // Simulate network delay
-    setTimeout(() => {
-      // Find preset match or default
-      const answer = chatResponses[text as keyof typeof chatResponses] || 
-        "I am analyzing the data. Please check the dashboard for current patient status.";
-      
-      setMessages(prev => [...prev, { role: 'ai', content: answer }]);
+    try {
+      const res = await api.post('/chat', { message: text });
+      setMessages(prev => [...prev, { role: 'ai', content: res.data.reply }]);
+    } catch (err: any) {
+      setMessages(prev => [...prev, { role: 'ai', content: "Sorry, I am having trouble connecting to the server. Please try again." }]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
